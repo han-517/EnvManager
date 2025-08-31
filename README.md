@@ -8,6 +8,7 @@ EnvManager is a command-line tool for quickly switching and managing temporary e
 - **Temporary Scope**: Environment variables are only active in the current shell session and are cleared upon exit.
 - **Easy Configuration**: Uses a simple JSON file for configuration, with support for switching between different config files for different projects.
 - **Seamless Integration**: Provides a native-like experience such as `emanager use my-preset` through a simple shell function, eliminating the need to manually run `eval`.
+- **Tab Completion**: Smart auto-completion for preset names when using `use`, `show`, and `remove` commands.
 
 ## Installation
 
@@ -30,6 +31,11 @@ An installation script is provided to automate the entire process.
 
 3.  **Reload your shell**:
     After the installation is complete, follow the script's instructions to restart your terminal or run `source ~/.zshrc` (or `~/.bashrc`) to start using the tool.
+
+    The installation script automatically sets up:
+    - The `emanager` command-line tool
+    - Shell integration for `use` and `clear` commands
+    - Tab completion for preset names
 
 ### Manual Installation
 
@@ -93,6 +99,7 @@ This will automatically create the `~/.config/emanager/presets.json` file and sa
 ```bash
 # Activate the environment variables for project1
 emanager use project1
+# You can also use Tab completion: emanager use <TAB> to see all available presets
 
 # Verify it
 echo $API_KEY 
@@ -114,12 +121,14 @@ emanager list
 
 # Show the details of the "project1" preset
 emanager show project1
+# Tab completion works: emanager show <TAB> to see all available presets
 
 # Add or update a variable in the "project1" preset
 emanager add project1 DEBUG=true
 
 # Remove the "project1" preset
 emanager remove project1
+# Tab completion works: emanager remove <TAB> to see all available presets
 ```
 
 ### 4. Manage Configuration Files

@@ -1,7 +1,9 @@
 mod config;
 
 use anyhow::{Context, Result};
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand, ValueHint};
+use clap_complete::{generate, Shell};
+use std::io;
 use std::path::PathBuf;
 use shell_escape;
 
@@ -18,6 +20,7 @@ enum Commands {
     /// Switch to a preset, loading its environment variables
     Use {
         /// The name of the preset to use
+        #[arg(value_hint = ValueHint::Other)]
         name: String,
     },
     /// Clear any active environment variables set by emanager
@@ -27,6 +30,7 @@ enum Commands {
     /// Show the contents of a specific preset
     Show {
         /// The name of the preset to show
+        #[arg(value_hint = ValueHint::Other)]
         name: String,
     },
     /// Add or update a variable in a preset
@@ -40,12 +44,19 @@ enum Commands {
     /// Remove a preset
     Remove {
         /// The name of the preset to remove
+        #[arg(value_hint = ValueHint::Other)]
         name: String,
     },
     /// Manage the configuration file path
     Config {
         #[command(subcommand)]
         config_command: ConfigCommands,
+    },
+    /// Generate shell completion scripts
+    #[command(hide = true)]
+    Completion {
+        /// The shell to generate completions for
+        shell: Shell,
     },
 }
 
@@ -74,6 +85,7 @@ fn main() -> Result<()> {
         Commands::Add { preset_name, pairs } => add_to_preset(&preset_name, pairs)?,
         Commands::Remove { name } => remove_preset(&name)?,
         Commands::Config { config_command } => handle_config(config_command)?,
+        Commands::Completion { shell } => generate_completion(shell),
     }
 
     Ok(())
@@ -210,4 +222,10 @@ fn handle_config(command: ConfigCommands) -> Result<()> {
         }
     }
     Ok(())
+}
+
+fn generate_completion(shell: Shell) {
+    let mut cmd = Cli::command();
+    let name = cmd.get_name().to_string();
+    generate(shell, &mut cmd, name, &mut io::stdout());
 }
